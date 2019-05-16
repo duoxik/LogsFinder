@@ -1,7 +1,8 @@
 package com.duoxik.logfinder;
 
+import com.duoxik.logfinder.exceptions.FileIsNotDirectoryException;
+
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,44 +16,35 @@ public class Model {
         return Collections.unmodifiableList(files);
     }
 
-    public void findLogs(final File dir, final String type, final String match) throws FileNotFoundException {
+    public void findLogs(final File dir, final String type, final String match) throws FileNotFoundException, FileIsNotDirectoryException {
 
         if (!dir.exists())
             throw new FileNotFoundException();
 
+        if (!dir.isDirectory())
+            throw new FileIsNotDirectoryException();
+
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
-                return fileName.endsWith("." + type) || new File(directory.toString() + "/" + fileName).isDirectory();
+                return fileName.endsWith("." + type) || Paths.get(directory.toString(), fileName).toFile().isDirectory();
             }
         };
 
-        if (dir.isDirectory()) {
+        for (File file : dir.listFiles(filter)) {
 
-            for (File file : dir.listFiles(filter)) {
-
-                if (file.isDirectory()) {
-                    findLogs(file, type, match);
-                    continue;
-                }
-
-                if (isFileType(file, type) && isFileContains(file, match)) {
-                    files.add(file);
-                }
+            if (file.isDirectory()) {
+                findLogs(file, type, match);
+                continue;
             }
-        } else {
 
-            if (isFileType(dir, type) && isFileContains(dir, match)) {
-                files.add(dir);
+            if (isFileContains(file, match)) {
+                files.add(file);
             }
         }
     }
 
     public void clear() {
         files.clear();
-    }
-
-    private boolean isFileType(File file, String type) {
-        return file.getName().endsWith("." + type);
     }
 
     private boolean isFileContains(File file, String match) {
@@ -68,10 +60,8 @@ public class Model {
                 }
             }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException ignored) {
+        } catch (IOException ignored) {
         }
 
         return false;

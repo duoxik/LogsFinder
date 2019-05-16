@@ -45,7 +45,7 @@ public class ModelTest {
 
         try {
 
-            MODEL.findLogs(TEST_FILE, type, match);
+            MODEL.findLogs(file, type, match);
 
             List<File> expected = new ArrayList<>();
             expected.add(new File("/home/duoxik/IdeaProjects/LogsFinder/test/com/duoxik/logfinder/files/dir_1/log_file.log"));
@@ -71,7 +71,7 @@ public class ModelTest {
 
         try {
 
-            MODEL.findLogs(TEST_FILE, type, match);
+            MODEL.findLogs(file, type, match);
 
             Assert.assertTrue(MODEL.getFiles().isEmpty());
 
@@ -91,7 +91,7 @@ public class ModelTest {
 
         try {
 
-            MODEL.findLogs(TEST_FILE, type, match);
+            MODEL.findLogs(file, type, match);
 
             List<File> expected = new ArrayList<>();
             expected.add(new File("/home/duoxik/IdeaProjects/LogsFinder/test/com/duoxik/logfinder/files/dir_1/notLogFile.txt"));
@@ -103,6 +103,26 @@ public class ModelTest {
 
         } catch (FileNotFoundException e) {
             Assert.fail("File not found?!");
+        }
+
+        MODEL.clear();
+    }
+
+    @Test
+    public void findLogsTest4() {
+
+        File file = new File("path/daspdas");
+        String type = "txt";
+        String match = "das";
+
+        try {
+
+            MODEL.findLogs(file, type, match);
+
+            Assert.fail("Files is not exists");
+
+        } catch (FileNotFoundException e) {
+
         }
 
         MODEL.clear();
