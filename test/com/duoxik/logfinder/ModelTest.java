@@ -1,5 +1,6 @@
 package com.duoxik.logfinder;
 
+import com.duoxik.logfinder.exceptions.FileIsNotDirectoryException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,6 +34,8 @@ public class ModelTest {
 
         } catch (FileNotFoundException e) {
             Assert.fail("File not found?!");
+        } catch (FileIsNotDirectoryException e) {
+            Assert.fail("File is not directory?!");
         }
     }
 
@@ -57,6 +60,8 @@ public class ModelTest {
 
         } catch (FileNotFoundException e) {
             Assert.fail("File not found?!");
+        } catch (FileIsNotDirectoryException e) {
+            Assert.fail("File is not directory?!");
         }
 
         MODEL.clear();
@@ -77,6 +82,8 @@ public class ModelTest {
 
         } catch (FileNotFoundException e) {
             Assert.fail("File not found?!");
+        } catch (FileIsNotDirectoryException e) {
+            Assert.fail("File is not directory?!");
         }
 
         MODEL.clear();
@@ -103,6 +110,8 @@ public class ModelTest {
 
         } catch (FileNotFoundException e) {
             Assert.fail("File not found?!");
+        } catch (FileIsNotDirectoryException e) {
+            Assert.fail("File is not directory?!");
         }
 
         MODEL.clear();
@@ -119,10 +128,32 @@ public class ModelTest {
 
             MODEL.findLogs(file, type, match);
 
-            Assert.fail("Files is not exists");
+            Assert.fail("Directory is not exists");
 
         } catch (FileNotFoundException e) {
+        } catch (FileIsNotDirectoryException e) {
+            Assert.fail("File is not directory?!");
+        }
 
+        MODEL.clear();
+    }
+
+    @Test
+    public void findLogsTest5() {
+
+        File file = new File("/home/duoxik/IdeaProjects/LogsFinder/test/com/duoxik/logfinder/files/dir_1/log_file.log");
+        String type = "txt";
+        String match = "das";
+
+        try {
+
+            MODEL.findLogs(file, type, match);
+
+            Assert.fail("File is not directory");
+
+        } catch (FileNotFoundException e) {
+            Assert.fail("File not found?!");
+        } catch (FileIsNotDirectoryException e) {
         }
 
         MODEL.clear();
