@@ -1,6 +1,8 @@
 package com.duoxik.logfinder;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,19 +15,26 @@ public class Model {
         return Collections.unmodifiableList(files);
     }
 
-    public void findLogs(String path, String type, String match) throws FileNotFoundException {
-
-        File dir = new File(path);
+    public void findLogs(final File dir, final String type, final String match) throws FileNotFoundException {
 
         if (!dir.exists())
             throw new FileNotFoundException();
 
-        if (type == null || type.equals(""))
-            type = "log";
+        FilenameFilter filter = new FilenameFilter() {
+            public boolean accept(File directory, String fileName) {
+                return fileName.endsWith("." + type) || new File(directory.toString() + "/" + fileName).isDirectory();
+            }
+        };
 
         if (dir.isDirectory()) {
 
-            for (File file : dir.listFiles()) {
+            for (File file : dir.listFiles(filter)) {
+
+                if (file.isDirectory()) {
+                    findLogs(file, type, match);
+                    continue;
+                }
+
                 if (isFileType(file, type) && isFileContains(file, match)) {
                     files.add(file);
                 }
