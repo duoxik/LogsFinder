@@ -16,7 +16,7 @@ public class Model {
         return Collections.unmodifiableList(files);
     }
 
-    public void findLogs(final File dir, final String type, final String match) throws FileNotFoundException, FileIsNotDirectoryException {
+    public void findLogs(final File dir, final String type, final String text) throws FileNotFoundException, FileIsNotDirectoryException {
 
         if (!dir.exists())
             throw new FileNotFoundException();
@@ -33,11 +33,11 @@ public class Model {
         for (File file : dir.listFiles(filter)) {
 
             if (file.isDirectory()) {
-                findLogs(file, type, match);
+                findLogs(file, type, text);
                 continue;
             }
 
-            if (isFileContains(file, match)) {
+            if (isFileContains(file, text)) {
                 files.add(file);
             }
         }

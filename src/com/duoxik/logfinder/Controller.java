@@ -1,6 +1,10 @@
 package com.duoxik.logfinder;
 
+import com.duoxik.logfinder.exceptions.FileIsNotDirectoryException;
 import com.duoxik.logfinder.view.View;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Controller {
 
@@ -12,10 +16,26 @@ public class Controller {
         this.view = view;
     }
 
+    public void findLogs(String path, String type, String text) {
+        try {
+            model.findLogs(new File(path), type, text);
+        } catch (FileNotFoundException e) {
+            // TODO
+        } catch (FileIsNotDirectoryException e) {
+            // TODO
+        }
+    }
+
+    public void exit() {
+        System.exit(0);
+    }
+
     public static void main(String[] args) {
         Model model = new Model();
         View view = new View();
         Controller controller = new Controller(model, view);
         view.setController(controller);
+
+        view.init();
     }
 }
