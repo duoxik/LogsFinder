@@ -1,5 +1,6 @@
 package com.duoxik.logfinder;
 
+import com.duoxik.logfinder.exceptions.DirectoryNotFoundException;
 import com.duoxik.logfinder.exceptions.FileIsNotDirectoryException;
 
 import java.io.*;
@@ -16,10 +17,10 @@ public class Model {
         return Collections.unmodifiableList(files);
     }
 
-    public void findLogs(final File dir, final String type, final String text) throws FileNotFoundException, FileIsNotDirectoryException {
+    public void findLogs(final File dir, final String type, final String text) throws DirectoryNotFoundException, FileIsNotDirectoryException {
 
         if (!dir.exists())
-            throw new FileNotFoundException();
+            throw new DirectoryNotFoundException();
 
         if (!dir.isDirectory())
             throw new FileIsNotDirectoryException();
