@@ -7,7 +7,6 @@ import com.duoxik.logfinder.gui.View;
 import java.io.File;
 
 public class Controller {
-
     private Model model;
     private View view;
 

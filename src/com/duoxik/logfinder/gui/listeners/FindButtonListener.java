@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class FindButtonListener implements ActionListener {
-
     private OpenJFrame frame;
 
     public FindButtonListener(OpenJFrame frame) {

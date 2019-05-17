@@ -7,7 +7,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class OpenJFrame extends JFrame {
-
     private JTextField path = new JTextField(21);
     private JTextField type = new JTextField(10);
     private JTextField text = new JTextField(32);
