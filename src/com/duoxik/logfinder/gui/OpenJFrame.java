@@ -15,7 +15,7 @@ public class OpenJFrame extends JFrame {
     private final View view;
 
     public OpenJFrame(View view) {
-        super("OpenFolder");
+        super("Open folder");
         this.view = view;
         init();
     }
