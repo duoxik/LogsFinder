@@ -20,16 +20,18 @@ public class View extends JFrame implements ActionListener {
         this.controller = controller;
     }
 
-    public void init() {
-        initGui();
-        addWindowListener(new FrameListener(this));
-        setVisible(true);
+    public View() {
+        super("Logs finder");
+        init();
     }
 
-    public void initGui() {
+    public void init() {
+
+        addWindowListener(new FrameListener(this));
         initMenuBar();
         initEditor();
         pack();
+        setVisible(true);
     }
 
     public void initMenuBar() {
@@ -77,6 +79,24 @@ public class View extends JFrame implements ActionListener {
                 showAbout();
                 break;
         }
+    }
+
+    public void showDirectoryNotFound() {
+        JOptionPane.showMessageDialog(
+                null,
+                "Directory is not found. Try again...",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        showOpenFrame();
+    }
+
+    public void showFileIsNotDirectory() {
+        JOptionPane.showMessageDialog(
+                null,
+                "The specified file is not a directory. Try again...",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        showOpenFrame();
     }
 
     public void showAbout() {
