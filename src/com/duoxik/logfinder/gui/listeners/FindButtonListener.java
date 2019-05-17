@@ -18,8 +18,8 @@ public class FindButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (frame.validateFields()) {
-            frame.findLogs();
             frame.setVisible(false);
+            frame.findLogs();
         } else {
             frame.setVisible(false);
             JOptionPane.showMessageDialog(
