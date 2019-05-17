@@ -1,6 +1,6 @@
-package com.duoxik.logfinder.view.listeners;
+package com.duoxik.logfinder.gui.listeners;
 
-import com.duoxik.logfinder.view.OpenJFrame;
+import com.duoxik.logfinder.gui.OpenJFrame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

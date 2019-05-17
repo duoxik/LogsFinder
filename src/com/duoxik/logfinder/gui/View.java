@@ -1,7 +1,7 @@
-package com.duoxik.logfinder.view;
+package com.duoxik.logfinder.gui;
 
 import com.duoxik.logfinder.Controller;
-import com.duoxik.logfinder.view.listeners.FrameListener;
+import com.duoxik.logfinder.gui.listeners.FrameListener;
 
 import javax.swing.*;
 import java.awt.*;

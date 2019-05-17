@@ -1,4 +1,4 @@
-package com.duoxik.logfinder.view;
+package com.duoxik.logfinder.gui;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;

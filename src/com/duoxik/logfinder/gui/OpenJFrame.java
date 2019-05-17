@@ -1,7 +1,7 @@
-package com.duoxik.logfinder.view;
+package com.duoxik.logfinder.gui;
 
-import com.duoxik.logfinder.view.listeners.CancelButtonListener;
-import com.duoxik.logfinder.view.listeners.FindButtonListener;
+import com.duoxik.logfinder.gui.listeners.CancelButtonListener;
+import com.duoxik.logfinder.gui.listeners.FindButtonListener;
 
 import javax.swing.*;
 import java.awt.*;

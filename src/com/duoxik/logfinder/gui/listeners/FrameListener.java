@@ -1,6 +1,6 @@
-package com.duoxik.logfinder.view.listeners;
+package com.duoxik.logfinder.gui.listeners;
 
-import com.duoxik.logfinder.view.View;
+import com.duoxik.logfinder.gui.View;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

@@ -1,7 +1,7 @@
 package com.duoxik.logfinder;
 
 import com.duoxik.logfinder.exceptions.FileIsNotDirectoryException;
-import com.duoxik.logfinder.view.View;
+import com.duoxik.logfinder.gui.View;
 
 import java.io.File;
 import java.io.FileNotFoundException;
