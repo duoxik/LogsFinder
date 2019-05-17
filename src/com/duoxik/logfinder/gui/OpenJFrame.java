@@ -22,13 +22,14 @@ public class OpenJFrame extends JFrame {
 
     public void init() {
         setSize(375, 185);
-        setResizable(false);
-        setAlwaysOnTop(true);
         setLocationRelativeTo(null);
+        setResizable(false);
 
-        path.setText("Enter directory path...");
+//        path.setText("Enter directory path...");
+        path.setText("/home/duoxik/IdeaProjects/LogsFinder/test/com/duoxik/logfinder/files");
         type.setText("log");
-        text.setText("Enter text...");
+//        text.setText("Enter text...");
+        text.setText("4");
 
         JLabel pathLabel = new JLabel("Directory path:");
         JLabel typeLabel = new JLabel("File type:");

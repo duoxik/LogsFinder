@@ -19,6 +19,7 @@ public class Controller {
     public void findLogs(String path, String type, String text) {
         try {
             model.findLogs(new File(path), type, text);
+            view.updateFileStructure(model.getRootDirectory(), model.getFiles());
         } catch (DirectoryNotFoundException e) {
             view.showDirectoryNotFound();
         } catch (FileIsNotDirectoryException e) {

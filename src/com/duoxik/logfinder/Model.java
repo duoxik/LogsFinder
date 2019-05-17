@@ -11,7 +11,12 @@ import java.util.List;
 
 public class Model {
 
+    private File rootDirectory;
     private List<File> files = new ArrayList<>();
+
+    public File getRootDirectory() {
+        return rootDirectory;
+    }
 
     public List<File> getFiles() {
         return Collections.unmodifiableList(files);
@@ -25,16 +30,27 @@ public class Model {
         if (!dir.isDirectory())
             throw new FileIsNotDirectoryException();
 
+        rootDirectory = dir;
+        files.clear();
+
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
                 return fileName.endsWith("." + type) || Paths.get(directory.toString(), fileName).toFile().isDirectory();
             }
         };
 
+        recursive(dir, text, filter);
+    }
+
+    public void clear() {
+        files.clear();
+    }
+
+    private void recursive(File dir, String text, FilenameFilter filter) {
         for (File file : dir.listFiles(filter)) {
 
             if (file.isDirectory()) {
-                findLogs(file, type, text);
+                recursive(file, text, filter);
                 continue;
             }
 
@@ -42,10 +58,6 @@ public class Model {
                 files.add(file);
             }
         }
-    }
-
-    public void clear() {
-        files.clear();
     }
 
     private boolean isFileContains(File file, String match) {

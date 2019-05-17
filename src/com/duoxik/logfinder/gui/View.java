@@ -7,13 +7,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.List;
 
 public class View extends JFrame implements ActionListener {
-
     private Controller controller;
-    private JTabbedPane tabbedPane = new JTabbedPane();
-    private JTextPane htmlTextPane = new JTextPane();
-    private JEditorPane plainTextPane = new JEditorPane();
+
+    private JTabbedPane leftTabbedPane = new JTabbedPane();
+    private JTabbedPane rightTabbedPane = new JTabbedPane();
     private OpenJFrame openJFrame = new OpenJFrame(this);
 
     public void setController(Controller controller) {
@@ -25,45 +26,13 @@ public class View extends JFrame implements ActionListener {
         init();
     }
 
-    public void init() {
-
-        addWindowListener(new FrameListener(this));
-        initMenuBar();
-        initEditor();
-        pack();
-        setVisible(true);
-    }
-
-    public void initMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
-        MenuHelper.initFileMenu(this, menuBar);
-        MenuHelper.initHelpMenu(this, menuBar);
-        getContentPane().add(menuBar, BorderLayout.NORTH);
-    }
-
-    public void initEditor() {
-
-        hideOpenFrame();
-        htmlTextPane.setContentType("text/html");
-        JScrollPane htmlScrollPane = new JScrollPane(htmlTextPane);
-        tabbedPane.add("HTML", htmlScrollPane);
-        JScrollPane plainScrollPane = new JScrollPane(plainTextPane);
-        tabbedPane.add("Текст", plainScrollPane);
-        tabbedPane.setPreferredSize(new Dimension(500, 500));
-        //tabbedPane.addChangeListener(new TabbedPaneChangeListener(this));
-        getContentPane().add(tabbedPane, BorderLayout.CENTER);
-    }
-
-    public void hideOpenFrame() {
-        openJFrame.setVisible(false);
-    }
-
-    public void showOpenFrame() {
-        openJFrame.setVisible(true);
-    }
-
     public void findLogs(String path, String type, String text) {
         controller.findLogs(path, type, text);
+    }
+
+    public void updateFileStructure(File rootDirectory, List<File> files) {
+        leftTabbedPane.add(rootDirectory.getName(), new FileTreeJPanel(rootDirectory, files));
+        leftTabbedPane.updateUI();
     }
 
     @Override
@@ -107,7 +76,44 @@ public class View extends JFrame implements ActionListener {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
+    public void hideOpenFrame() {
+        openJFrame.setVisible(false);
+    }
+
+    public void showOpenFrame() {
+        openJFrame.setVisible(true);
+    }
+
     public void exit() {
         controller.exit();
+    }
+
+    private void init() {
+        addWindowListener(new FrameListener(this));
+        initMenuBar();
+        initTabbedPanes();
+        pack();
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setVisible(true);
+    }
+
+    private void initMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        MenuHelper.initFileMenu(this, menuBar);
+        MenuHelper.initHelpMenu(this, menuBar);
+        getContentPane().add(menuBar, BorderLayout.NORTH);
+    }
+
+    private void initTabbedPanes() {
+        leftTabbedPane.setPreferredSize(new Dimension(300, 500));
+        getContentPane().add(leftTabbedPane, BorderLayout.WEST);
+
+        JEditorPane plainTextPane = new JEditorPane();
+        JScrollPane plainScrollPane = new JScrollPane(plainTextPane);
+        rightTabbedPane.add("Текст", plainScrollPane);
+
+        rightTabbedPane.setPreferredSize(new Dimension(700, 500));
+        getContentPane().add(rightTabbedPane, BorderLayout.EAST);
     }
 }
