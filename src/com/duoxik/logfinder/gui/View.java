@@ -53,7 +53,7 @@ public class View extends JFrame implements ActionListener {
         rightTabbedPane.setSelectedComponent(editor);
     }
 
-    public void removeTab(File file) {
+    public void closeTab(File file) {
         EditorJPanel editor = editors.remove(file);
 
         if (editor != null) {
