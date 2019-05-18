@@ -1,7 +1,8 @@
 package com.duoxik.logfinder.gui;
 
+import com.duoxik.logfinder.gui.listeners.FileTreeListener;
+
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
@@ -9,33 +10,41 @@ import java.util.*;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class FileTreeJPanel extends JPanel {
-    public FileTreeJPanel(File dir, List<File> files) {
+    private File directory;
+    private List<File> files;
+    private View view;
+    private JTree tree;
+
+    public FileTreeJPanel(File directory, List<File> files, View view) {
+        this.directory = directory;
+        this.files = files;
+        this.view = view;
+        init();
+    }
+
+    public void readFile(File file) {
+        view.readFile(file);
+    }
+
+    public File getDirectory() {
+        return directory;
+    }
+
+    private void init() {
         setLayout(new BorderLayout());
-        JTree tree = createFileTree(dir, files);
-
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) e
-                        .getPath().getLastPathComponent();
-                System.out.println(e.getPath());
-            }
-        });
-
+        initTree();
+        tree.addTreeSelectionListener(new FileTreeListener(this));
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.getViewport().add(tree);
         add(BorderLayout.CENTER, scrollPane);
-        setPreferredSize(new Dimension(300, 500));
     }
 
-
-    private JTree createFileTree(File dir, List<File> files) {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(dir.getName());
-        Path rootPath = dir.toPath();
+    private void initTree() {
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(directory.getName());
+        Path rootPath = directory.toPath();
 
         for (File file : files) {
             Path filePath = file.toPath();
@@ -43,7 +52,7 @@ public class FileTreeJPanel extends JPanel {
             addNodes(root, relativePath);
         }
 
-        return new JTree(root);
+        tree = new JTree(root);
     }
 
     private void addNodes(DefaultMutableTreeNode parent, Path path) {
