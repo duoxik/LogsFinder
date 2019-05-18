@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 public class CloseButtonListener implements ActionListener {
-
     private View view;
     private File file;
 

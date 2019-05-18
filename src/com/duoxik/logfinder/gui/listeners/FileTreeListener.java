@@ -9,7 +9,6 @@ import javax.swing.tree.TreePath;
 import java.io.File;
 
 public class FileTreeListener implements TreeSelectionListener {
-
     private FileTreeJPanel fileTree;
 
     public FileTreeListener(FileTreeJPanel fileTree) {
