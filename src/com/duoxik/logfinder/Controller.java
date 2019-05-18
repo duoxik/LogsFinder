@@ -30,8 +30,7 @@ public class Controller {
     public void readFile(File file) {
         try {
             String text = model.readFile(file);
-            String fileName = file.getName();
-            view.openNewTab(fileName, text);
+            view.openNewTab(file, text);
         } catch (FileNotFoundException ignored) {
         }
     }

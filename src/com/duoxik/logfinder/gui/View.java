@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.*;
 import java.util.List;
 
 public class View extends JFrame implements ActionListener {
@@ -16,6 +17,8 @@ public class View extends JFrame implements ActionListener {
     private JTabbedPane leftTabbedPane = new JTabbedPane();
     private JTabbedPane rightTabbedPane = new JTabbedPane();
     private OpenJFrame openJFrame = new OpenJFrame(this);
+
+    private Map<File, EditorJPanel> editors = new HashMap<>();
 
     public void setController(Controller controller) {
         this.controller = controller;
@@ -35,14 +38,27 @@ public class View extends JFrame implements ActionListener {
     }
 
     public void updateFileStructure(File rootDirectory, List<File> files) {
-        leftTabbedPane.add(rootDirectory.getName(), new FileTreeJPanel(rootDirectory, files, this));
-        leftTabbedPane.updateUI();
+        leftTabbedPane.addTab(rootDirectory.getName(), new FileTreeJPanel(rootDirectory, files, this));
     }
 
-    public void openNewTab(String fileName, String text) {
-        EditorJPanel editor = new EditorJPanel(text, this);
-        rightTabbedPane.add(fileName, editor);
+    public void openNewTab(File file, String text) {
+        EditorJPanel editor = editors.get(file);
+
+        if (editor == null) {
+            editor = new EditorJPanel(this, file, text);
+            rightTabbedPane.addTab(file.getName(), editor);
+            editors.put(file, editor);
+        }
+
         rightTabbedPane.setSelectedComponent(editor);
+    }
+
+    public void removeTab(File file) {
+        EditorJPanel editor = editors.remove(file);
+
+        if (editor != null) {
+            rightTabbedPane.remove(editor);
+        }
     }
 
     @Override
