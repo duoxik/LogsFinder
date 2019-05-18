@@ -21,6 +21,25 @@ public class Model {
         return Collections.unmodifiableList(files);
     }
 
+    public String readFile(File file) throws FileNotFoundException {
+
+        if (!file.exists())
+            throw new FileNotFoundException();
+
+        StringBuilder data = new StringBuilder();
+
+        try (
+                BufferedReader br = new BufferedReader(new FileReader(file))
+        ) {
+            while (br.ready()) {
+                data.append(br.readLine() + "\n");
+            }
+        } catch (IOException ignored) {
+        }
+
+        return data.toString();
+    }
+
     public void findLogs(final File dir, final String type, final String text) throws DirectoryNotFoundException, FileIsNotDirectoryException {
         if (!dir.exists())
             throw new DirectoryNotFoundException();
