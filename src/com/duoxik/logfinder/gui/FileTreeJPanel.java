@@ -13,16 +13,14 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class FileTreeJPanel extends JPanel {
-    private File directory;
-    private List<File> files;
-    private View view;
-    private JTree tree;
+    private File directory = null;
+    private List<File> files  = null;
 
-    public FileTreeJPanel(File directory, List<File> files, View view) {
-        this.directory = directory;
-        this.files = files;
+    private View view;
+
+    public FileTreeJPanel(View view) {
         this.view = view;
-        init();
+        setLayout(new BorderLayout());
     }
 
     public void readFile(File file) {
@@ -33,16 +31,20 @@ public class FileTreeJPanel extends JPanel {
         return directory;
     }
 
-    private void init() {
-        setLayout(new BorderLayout());
-        initTree();
+    public void setFileTree(File directory, List<File> files) {
+        this.directory = directory;
+        this.files = files;
+
+        JTree tree = createTree(directory, files);
         tree.addTreeSelectionListener(new FileTreeListener(this));
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.getViewport().add(tree);
+        JScrollPane scrollPane = new JScrollPane(tree);
+
+        removeAll();
         add(BorderLayout.CENTER, scrollPane);
+        updateUI();
     }
 
-    private void initTree() {
+    private JTree createTree(File directory, List<File> files) {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(directory.getName());
         Path rootPath = directory.toPath();
 
@@ -52,7 +54,7 @@ public class FileTreeJPanel extends JPanel {
             addNodes(root, relativePath);
         }
 
-        tree = new JTree(root);
+        return new JTree(root);
     }
 
     private void addNodes(DefaultMutableTreeNode parent, Path path) {

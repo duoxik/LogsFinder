@@ -14,11 +14,11 @@ import java.util.List;
 public class View extends JFrame implements ActionListener {
     private Controller controller;
 
-    private JTabbedPane leftTabbedPane = new JTabbedPane();
-    private JTabbedPane rightTabbedPane = new JTabbedPane();
-    private OpenJFrame openJFrame = new OpenJFrame(this);
+    private FileTreeJPanel treePanel = new FileTreeJPanel(this);
+    private JTabbedPane tabbedPane = new JTabbedPane();
+    private OpenJFrame openFrame = new OpenJFrame(this);
 
-    private Map<File, EditorJPanel> editors = new HashMap<>();
+    private Map<File, EditorJPanel> tabs = new HashMap<>();
 
     public void setController(Controller controller) {
         this.controller = controller;
@@ -38,26 +38,26 @@ public class View extends JFrame implements ActionListener {
     }
 
     public void updateFileStructure(File rootDirectory, List<File> files) {
-        leftTabbedPane.addTab(rootDirectory.getName(), new FileTreeJPanel(rootDirectory, files, this));
+        treePanel.setFileTree(rootDirectory, files);
     }
 
     public void openNewTab(File file, String text) {
-        EditorJPanel editor = editors.get(file);
+        EditorJPanel editor = tabs.get(file);
 
         if (editor == null) {
             editor = new EditorJPanel(this, file, text);
-            rightTabbedPane.addTab(file.getName(), editor);
-            editors.put(file, editor);
+            tabbedPane.addTab(file.getName(), editor);
+            tabs.put(file, editor);
         }
 
-        rightTabbedPane.setSelectedComponent(editor);
+        tabbedPane.setSelectedComponent(editor);
     }
 
     public void closeTab(File file) {
-        EditorJPanel editor = editors.remove(file);
+        EditorJPanel editor = tabs.remove(file);
 
         if (editor != null) {
-            rightTabbedPane.remove(editor);
+            tabbedPane.remove(editor);
         }
     }
 
@@ -103,11 +103,11 @@ public class View extends JFrame implements ActionListener {
     }
 
     public void hideOpenFrame() {
-        openJFrame.setVisible(false);
+        openFrame.setVisible(false);
     }
 
     public void showOpenFrame() {
-        openJFrame.setVisible(true);
+        openFrame.setVisible(true);
     }
 
     public void exit() {
@@ -117,7 +117,8 @@ public class View extends JFrame implements ActionListener {
     private void init() {
         addWindowListener(new FrameListener(this));
         initMenuBar();
-        initTabbedPanes();
+        initTabbedPane();
+        initTreePanel();
         pack();
         setLocationRelativeTo(null);
         setResizable(false);
@@ -131,11 +132,13 @@ public class View extends JFrame implements ActionListener {
         getContentPane().add(menuBar, BorderLayout.NORTH);
     }
 
-    private void initTabbedPanes() {
-        leftTabbedPane.setPreferredSize(new Dimension(300, 500));
-        getContentPane().add(leftTabbedPane, BorderLayout.WEST);
+    private void initTreePanel() {
+        treePanel.setPreferredSize(new Dimension(300, 500));
+        getContentPane().add(treePanel, BorderLayout.WEST);
+    }
 
-        rightTabbedPane.setPreferredSize(new Dimension(700, 500));
-        getContentPane().add(rightTabbedPane, BorderLayout.EAST);
+    private void initTabbedPane() {
+        tabbedPane.setPreferredSize(new Dimension(700, 500));
+        getContentPane().add(tabbedPane, BorderLayout.EAST);
     }
 }
