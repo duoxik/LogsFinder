@@ -30,9 +30,19 @@ public class View extends JFrame implements ActionListener {
         controller.findLogs(path, type, text);
     }
 
+    public void readFile(File file) {
+        controller.readFile(file);
+    }
+
     public void updateFileStructure(File rootDirectory, List<File> files) {
-        leftTabbedPane.add(rootDirectory.getName(), new FileTreeJPanel(rootDirectory, files));
+        leftTabbedPane.add(rootDirectory.getName(), new FileTreeJPanel(rootDirectory, files, this));
         leftTabbedPane.updateUI();
+    }
+
+    public void openNewTab(String fileName, String text) {
+        EditorJPanel editor = new EditorJPanel(text, this);
+        rightTabbedPane.add(fileName, editor);
+        rightTabbedPane.setSelectedComponent(editor);
     }
 
     @Override
@@ -100,18 +110,14 @@ public class View extends JFrame implements ActionListener {
 
     private void initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
-        MenuHelper.initFileMenu(this, menuBar);
-        MenuHelper.initHelpMenu(this, menuBar);
+        Helper.initFileMenu(this, menuBar);
+        Helper.initHelpMenu(this, menuBar);
         getContentPane().add(menuBar, BorderLayout.NORTH);
     }
 
     private void initTabbedPanes() {
         leftTabbedPane.setPreferredSize(new Dimension(300, 500));
         getContentPane().add(leftTabbedPane, BorderLayout.WEST);
-
-        JEditorPane plainTextPane = new JEditorPane();
-        JScrollPane plainScrollPane = new JScrollPane(plainTextPane);
-        rightTabbedPane.add("Текст", plainScrollPane);
 
         rightTabbedPane.setPreferredSize(new Dimension(700, 500));
         getContentPane().add(rightTabbedPane, BorderLayout.EAST);

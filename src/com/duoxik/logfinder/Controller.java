@@ -5,6 +5,7 @@ import com.duoxik.logfinder.exceptions.FileIsNotDirectoryException;
 import com.duoxik.logfinder.gui.View;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Controller {
     private Model model;
@@ -23,6 +24,15 @@ public class Controller {
             view.showDirectoryNotFound();
         } catch (FileIsNotDirectoryException e) {
             view.showFileIsNotDirectory();
+        }
+    }
+
+    public void readFile(File file) {
+        try {
+            String text = model.readFile(file);
+            String fileName = file.getName();
+            view.openNewTab(fileName, text);
+        } catch (FileNotFoundException ignored) {
         }
     }
 
