@@ -1,9 +1,13 @@
 package com.duoxik.logfinder.gui;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public class MenuHelper {
+public class Helper {
     public static JMenuItem addMenuItem(JMenu parent, String text, ActionListener actionListener) {
         JMenuItem menuItem = new JMenuItem(text);
         menuItem.addActionListener(actionListener);
@@ -37,5 +41,11 @@ public class MenuHelper {
         menuBar.add(helpMenu);
 
         addMenuItem(helpMenu, "About", view);
+    }
+
+    public static File transformToFilePath(String directory, TreePath tp) {
+        String path = tp.toString().replaceAll("\\]| |\\[|", "").replaceAll(",", File.separator);
+        Path resultPath = Paths.get(directory, path);
+        return resultPath.toFile();
     }
 }
