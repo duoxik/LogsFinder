@@ -1,11 +1,10 @@
-package com.duoxik.logfinder.controllers;
+package com.duoxik.logfinder.controller;
 
 import java.io.*;
 
 public class FileReaderController {
 
     public String readFile(File file) throws FileNotFoundException {
-
         if (!file.exists())
             throw new FileNotFoundException();
 
