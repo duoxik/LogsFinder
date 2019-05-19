@@ -1,6 +1,6 @@
 package com.duoxik.logfinder.exceptions;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
-public class DirectoryNotFoundException extends FileNotFoundException {
+public class DirectoryNotFoundException extends IOException {
 }
