@@ -1,6 +1,7 @@
 package com.duoxik.logfinder.gui;
 
 import com.duoxik.logfinder.gui.listeners.CloseButtonListener;
+import com.duoxik.logfinder.gui.listeners.SelectAllButtonListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,8 +9,8 @@ import java.io.File;
 
 public class EditorJPanel extends JPanel {
 
-    private JTextPane plainTextPane = new JTextPane();
-    private JScrollPane scrollPane = new JScrollPane(plainTextPane);
+    private JTextPane textPane = new JTextPane();
+    private JScrollPane scrollPane = new JScrollPane(textPane);
 
     private View view;
     private File file;
@@ -21,16 +22,19 @@ public class EditorJPanel extends JPanel {
     }
 
     private void init(String text) {
-        //plainTextPane.setContentType("text/html");
-        plainTextPane.setText(text);
-        plainTextPane.setEditable(false);
+        //textPane.setContentType("text/html");
+        textPane.setText(text);
+        textPane.setEditable(false);
+
         setLayout(new BorderLayout());
         add(BorderLayout.CENTER, scrollPane);
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BorderLayout());
-        Button button1 = new Button("left");
-        buttonsPanel.add(BorderLayout.WEST, button1);
+
+        Button selectAllButton = new Button("Select All");
+        buttonsPanel.add(BorderLayout.WEST, selectAllButton);
+        selectAllButton.addActionListener(new SelectAllButtonListener(textPane));
 
         Button button2 = new Button("center");
         buttonsPanel.add(BorderLayout.CENTER, button2);
