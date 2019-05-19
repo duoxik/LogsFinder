@@ -10,7 +10,6 @@ import java.io.File;
 public class EditorJPanel extends JPanel {
 
     private JTextPane textPane = new JTextPane();
-    private JScrollPane scrollPane = new JScrollPane(textPane);
 
     private View view;
     private File file;
@@ -22,13 +21,19 @@ public class EditorJPanel extends JPanel {
     }
 
     private void init(String text) {
-        //textPane.setContentType("text/html");
+        setLayout(new BorderLayout());
+        initTextPane(text);
+        initButtonsPanel();
+    }
+
+    private void initTextPane(String text) {
         textPane.setText(text);
         textPane.setEditable(false);
-
-        setLayout(new BorderLayout());
+        JScrollPane scrollPane = new JScrollPane(textPane);
         add(BorderLayout.CENTER, scrollPane);
+    }
 
+    private void initButtonsPanel() {
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BorderLayout());
 

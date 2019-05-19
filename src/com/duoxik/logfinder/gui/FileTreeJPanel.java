@@ -1,6 +1,7 @@
 package com.duoxik.logfinder.gui;
 
 import com.duoxik.logfinder.gui.listeners.FileTreeListener;
+import com.duoxik.logfinder.model.LogFile;
 
 import java.awt.BorderLayout;
 import java.io.File;
@@ -14,7 +15,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class FileTreeJPanel extends JPanel {
     private File directory = null;
-    private List<File> files  = null;
+    private List<LogFile> files  = null;
 
     private View view;
 
@@ -31,7 +32,8 @@ public class FileTreeJPanel extends JPanel {
         return directory;
     }
 
-    public void setFileTree(File directory, List<File> files) {
+    public void setFileTree(File directory, List<LogFile> files) {
+
         this.directory = directory;
         this.files = files;
 
@@ -44,12 +46,12 @@ public class FileTreeJPanel extends JPanel {
         updateUI();
     }
 
-    private JTree createTree(File directory, List<File> files) {
+    private JTree createTree(File directory, List<LogFile> files) {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(directory.getName());
         Path rootPath = directory.toPath();
 
-        for (File file : files) {
-            Path filePath = file.toPath();
+        for (LogFile file : files) {
+            Path filePath = file.getPath();
             Path relativePath = rootPath.relativize(filePath);
             addNodes(root, relativePath);
         }

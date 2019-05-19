@@ -1,7 +1,8 @@
 package com.duoxik.logfinder.gui;
 
-import com.duoxik.logfinder.Controller;
+import com.duoxik.logfinder.controllers.Controller;
 import com.duoxik.logfinder.gui.listeners.FrameListener;
+import com.duoxik.logfinder.model.LogFile;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +38,7 @@ public class View extends JFrame implements ActionListener {
         controller.readFile(file);
     }
 
-    public void updateFileStructure(File rootDirectory, List<File> files) {
+    public void updateFileStructure(File rootDirectory, List<LogFile> files) {
         treePanel.setFileTree(rootDirectory, files);
     }
 

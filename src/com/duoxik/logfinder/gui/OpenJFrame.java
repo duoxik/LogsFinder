@@ -28,7 +28,7 @@ public class OpenJFrame extends JFrame {
         path.setText("/home/duoxik/IdeaProjects/LogsFinder/test/com/duoxik/logfinder/files");
         type.setText("log");
 //        text.setText("Enter text...");
-        text.setText("4");
+        text.setText("client");
 
         JLabel pathLabel = new JLabel("Directory path:");
         JLabel typeLabel = new JLabel("File type:");
