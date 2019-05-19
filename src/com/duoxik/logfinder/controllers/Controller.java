@@ -1,15 +1,20 @@
-package com.duoxik.logfinder;
+package com.duoxik.logfinder.controllers;
 
 import com.duoxik.logfinder.exceptions.DirectoryNotFoundException;
 import com.duoxik.logfinder.exceptions.FileIsNotDirectoryException;
 import com.duoxik.logfinder.gui.View;
+import com.duoxik.logfinder.model.LogFile;
+import com.duoxik.logfinder.model.Model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 
 public class Controller {
-    private Model model;
-    private View view;
+    private final Model model;
+    private final View view;
+    private final LogFinderController logFinder = new LogFinderController();
+    private final FileReaderController fileReader = new FileReaderController();
 
     public Controller(Model model, View view) {
         this.model = model;
@@ -18,7 +23,8 @@ public class Controller {
 
     public void findLogs(String path, String type, String text) {
         try {
-            model.findLogs(new File(path), type, text);
+            List<LogFile> files = logFinder.findLogs(path, type, text);
+            model.update(new File(path), files);
             view.updateFileStructure(model.getRootDirectory(), model.getFiles());
         } catch (DirectoryNotFoundException e) {
             view.showDirectoryNotFound();
@@ -29,7 +35,7 @@ public class Controller {
 
     public void readFile(File file) {
         try {
-            String text = model.readFile(file);
+            String text = fileReader.readFile(file);
             view.openNewTab(file, text);
         } catch (FileNotFoundException ignored) {
         }
