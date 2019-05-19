@@ -1,4 +1,4 @@
-package com.duoxik.logfinder.controllers;
+package com.duoxik.logfinder.controller;
 
 import com.duoxik.logfinder.exceptions.DirectoryNotFoundException;
 import com.duoxik.logfinder.exceptions.FileIsNotDirectoryException;
@@ -10,11 +10,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-public class Controller {
+public class Controller implements Runnable {
     private final Model model;
     private final View view;
     private final LogFinderController logFinder = new LogFinderController();
     private final FileReaderController fileReader = new FileReaderController();
+
+    private String path;
+    private String type;
+    private String text;
 
     public Controller(Model model, View view) {
         this.model = model;
@@ -22,14 +26,34 @@ public class Controller {
     }
 
     public void findLogs(String path, String type, String text) {
+        this.path = path;
+        this.type = type;
+        this.text = text;
+        new Thread(this).start();
+    }
+
+    @Override
+    public void run() {
         try {
-            List<LogFile> files = logFinder.findLogs(path, type, text);
-            model.update(new File(path), files);
-            view.updateFileStructure(model.getRootDirectory(), model.getFiles());
+            view.lockFindButton();
+
+            Thread.sleep(2000);
+
+            File directory = new File(path);
+            List<LogFile> files = logFinder.findLogs(directory, type, text);
+
+            view.updateFileStructure(directory, files);
+            model.update(directory, files);
         } catch (DirectoryNotFoundException e) {
             view.showDirectoryNotFound();
         } catch (FileIsNotDirectoryException e) {
             view.showFileIsNotDirectory();
+        } catch (FileNotFoundException e) {
+            view.showFilesNotFound();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            view.unlockFindButton();
         }
     }
 
