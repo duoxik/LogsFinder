@@ -1,7 +1,8 @@
-package com.duoxik.logfinder;
+package com.duoxik.logfinder.controllers;
 
 import com.duoxik.logfinder.exceptions.DirectoryNotFoundException;
 import com.duoxik.logfinder.exceptions.FileIsNotDirectoryException;
+import com.duoxik.logfinder.model.LogFile;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -9,46 +10,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Model {
-    private File rootDirectory;
-    private List<File> files = new ArrayList<>();
+public class LogFinderController {
 
-    public File getRootDirectory() {
-        return rootDirectory;
-    }
+    public List<LogFile> findLogs(String path, String type, String text) throws DirectoryNotFoundException, FileIsNotDirectoryException {
+        File dir = new File(path);
 
-    public List<File> getFiles() {
-        return Collections.unmodifiableList(files);
-    }
-
-    public String readFile(File file) throws FileNotFoundException {
-
-        if (!file.exists())
-            throw new FileNotFoundException();
-
-        StringBuilder data = new StringBuilder();
-
-        try (
-                BufferedReader br = new BufferedReader(new FileReader(file))
-        ) {
-            while (br.ready()) {
-                data.append(br.readLine() + "\n");
-            }
-        } catch (IOException ignored) {
-        }
-
-        return data.toString();
-    }
-
-    public void findLogs(final File dir, final String type, final String text) throws DirectoryNotFoundException, FileIsNotDirectoryException {
         if (!dir.exists())
             throw new DirectoryNotFoundException();
 
         if (!dir.isDirectory())
             throw new FileIsNotDirectoryException();
 
-        rootDirectory = dir;
-        files.clear();
 
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
@@ -56,24 +28,26 @@ public class Model {
             }
         };
 
-        recursive(dir, text, filter);
+        List<LogFile> files = recursive(dir, text, filter);
+        Collections.sort(files);
+        return files;
     }
 
-    public void clear() {
-        files.clear();
-    }
+    private List<LogFile> recursive(File dir, String text, FilenameFilter filter) {
+        List<LogFile> files = new ArrayList<>();
 
-    private void recursive(File dir, String text, FilenameFilter filter) {
         for (File file : dir.listFiles(filter)) {
             if (file.isDirectory()) {
-                recursive(file, text, filter);
+                files.addAll(recursive(file, text, filter));
                 continue;
             }
 
             if (isFileContains(file, text)) {
-                files.add(file);
+                files.add(new LogFile(file.toString()));
             }
         }
+
+        return files;
     }
 
     private boolean isFileContains(File file, String match) {
