@@ -1,4 +1,4 @@
-package com.duoxik.logfinder.controllers;
+package com.duoxik.logfinder.controller;
 
 import com.duoxik.logfinder.exceptions.DirectoryNotFoundException;
 import com.duoxik.logfinder.exceptions.FileIsNotDirectoryException;
@@ -12,13 +12,13 @@ import java.util.List;
 
 public class LogFinderController {
 
-    public List<LogFile> findLogs(String path, String type, String text) throws DirectoryNotFoundException, FileIsNotDirectoryException {
-        File dir = new File(path);
+    public List<LogFile> findLogs(File directrory, String type, String text)
+            throws DirectoryNotFoundException, FileIsNotDirectoryException, FileNotFoundException {
 
-        if (!dir.exists())
+        if (!directrory.exists())
             throw new DirectoryNotFoundException();
 
-        if (!dir.isDirectory())
+        if (!directrory.isDirectory())
             throw new FileIsNotDirectoryException();
 
 
@@ -28,7 +28,11 @@ public class LogFinderController {
             }
         };
 
-        List<LogFile> files = recursive(dir, text, filter);
+        List<LogFile> files = recursive(directrory, text, filter);
+
+        if (files.isEmpty())
+            throw new FileNotFoundException();
+
         Collections.sort(files);
         return files;
     }
