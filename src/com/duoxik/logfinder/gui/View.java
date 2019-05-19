@@ -1,6 +1,6 @@
 package com.duoxik.logfinder.gui;
 
-import com.duoxik.logfinder.controllers.Controller;
+import com.duoxik.logfinder.controller.Controller;
 import com.duoxik.logfinder.gui.listeners.FrameListener;
 import com.duoxik.logfinder.model.LogFile;
 
@@ -62,11 +62,19 @@ public class View extends JFrame implements ActionListener {
         }
     }
 
+    public void lockFindButton() {
+        openFrame.lockFindButton();
+    }
+
+    public void unlockFindButton() {
+        openFrame.unlockFindButton();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case "Open":
-                showOpenFrame();
+                openFrame.setVisible(true);
                 break;
             case "Exit":
                 exit();
@@ -83,7 +91,7 @@ public class View extends JFrame implements ActionListener {
                 "Directory is not found. Try again...",
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
-        showOpenFrame();
+        openFrame.setVisible(true);
     }
 
     public void showFileIsNotDirectory() {
@@ -92,7 +100,16 @@ public class View extends JFrame implements ActionListener {
                 "The specified file is not a directory. Try again...",
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
-        showOpenFrame();
+        openFrame.setVisible(true);
+    }
+
+    public void showFilesNotFound() {
+        JOptionPane.showMessageDialog(
+                null,
+                "Files not found. Try again...",
+                "Info",
+                JOptionPane.INFORMATION_MESSAGE);
+        openFrame.setVisible(true);
     }
 
     public void showAbout() {
@@ -103,33 +120,27 @@ public class View extends JFrame implements ActionListener {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void hideOpenFrame() {
-        openFrame.setVisible(false);
-    }
-
-    public void showOpenFrame() {
-        openFrame.setVisible(true);
-    }
-
     public void exit() {
         controller.exit();
     }
 
     private void init() {
+        setResizable(false);
         addWindowListener(new FrameListener(this));
+
         initMenuBar();
         initTabbedPane();
         initTreePanel();
+
         pack();
         setLocationRelativeTo(null);
-        setResizable(false);
         setVisible(true);
     }
 
     private void initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
-        Helper.initFileMenu(this, menuBar);
-        Helper.initHelpMenu(this, menuBar);
+        GuiHelper.initFileMenu(this, menuBar);
+        GuiHelper.initHelpMenu(this, menuBar);
         getContentPane().add(menuBar, BorderLayout.NORTH);
     }
 
