@@ -1,7 +1,7 @@
 package com.duoxik.logfinder.gui.listeners;
 
 import com.duoxik.logfinder.gui.FileTreeJPanel;
-import com.duoxik.logfinder.gui.Helper;
+import com.duoxik.logfinder.gui.GuiHelper;
 
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -19,7 +19,7 @@ public class FileTreeListener implements TreeSelectionListener {
     public void valueChanged(TreeSelectionEvent e) {
         TreePath treePath = e.getPath();
         String root = fileTree.getDirectory().getParent();
-        File selectedFile = Helper.transformToFilePath(root, treePath);
+        File selectedFile = GuiHelper.transformToFilePath(root, treePath);
         if (!selectedFile.isDirectory()) {
             fileTree.readFile(selectedFile);
         }
