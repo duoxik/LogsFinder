@@ -8,6 +8,7 @@ import com.duoxik.logfinder.model.Model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 public class Controller implements Runnable {
@@ -52,18 +53,24 @@ public class Controller implements Runnable {
     }
 
     public void openFile(File file) {
-        LogFile log = model.getLogFile(file);
+        try {
+            LogFile log = model.getLogFile(file);
 
-        if (log != null) {
-            String firstPage = fileReader.readFile(log, 1);
-            int countPages = fileReader.countPages(log);
-            view.openTab(file, countPages, firstPage);
-        }
+            if (log != null) {
+                String firstPage = fileReader.readFile(log, 1);
+                int countPages = fileReader.countPages(log);
+                view.openTab(file, countPages, firstPage);
+            }
+        } catch (IOException ignored) {}
     }
 
     public String getPage(File file, int pageNumber) {
-        LogFile log = model.getLogFile(file);
-        return (log != null) ? fileReader.readFile(log, pageNumber) : null;
+        try {
+            LogFile log = model.getLogFile(file);
+            return fileReader.readFile(log, pageNumber);
+        } catch (IOException ignored) {
+            return null;
+        }
     }
 
     public void exit() {
