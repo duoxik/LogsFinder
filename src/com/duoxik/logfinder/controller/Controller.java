@@ -36,12 +36,8 @@ public class Controller implements Runnable {
     public void run() {
         try {
             view.lockFindButton();
-
-            Thread.sleep(2000);
-
             File directory = new File(path);
             List<LogFile> files = logFinder.findLogs(directory, type, text);
-
             view.updateFileStructure(directory, files);
             model.update(directory, files);
         } catch (DirectoryNotFoundException e) {
@@ -50,19 +46,25 @@ public class Controller implements Runnable {
             view.showFileIsNotDirectory();
         } catch (FileNotFoundException e) {
             view.showFilesNotFound();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } finally {
             view.unlockFindButton();
         }
     }
 
-    public void readFile(File file) {
-        try {
-            String text = fileReader.readFile(file);
-            view.openNewTab(file, text);
-        } catch (FileNotFoundException ignored) {
+    public void openFile(File file) {
+
+        LogFile log = model.getLogFile(file);
+
+        if (log != null) {
+            String firstPage = fileReader.readFile(log, 1);
+            int countPages = fileReader.countPages(log);
+            view.openTab(file, countPages, firstPage);
         }
+    }
+
+    public String getPage(File file, int pageNumber) {
+        LogFile log = model.getLogFile(file);
+        return (log != null) ? fileReader.readFile(log, pageNumber) : null;
     }
 
     public void exit() {

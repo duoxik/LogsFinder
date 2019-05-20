@@ -17,6 +17,16 @@ public class Model {
         return Collections.unmodifiableList(files);
     }
 
+    public LogFile getLogFile(File file) {
+        LogFile logFile = new LogFile(file);
+        for (LogFile log : files) {
+            if (log.equals(logFile))
+                return log;
+        }
+
+        return null;
+    }
+
     public void update(File rootDirectory, List<LogFile> files) {
         this.rootDirectory = rootDirectory;
         this.files = files;

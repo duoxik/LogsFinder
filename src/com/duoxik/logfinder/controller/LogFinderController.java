@@ -9,16 +9,18 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LogFinderController {
 
-    public List<LogFile> findLogs(File directrory, String type, String text)
+    public List<LogFile> findLogs(File directory, String type, String text)
             throws DirectoryNotFoundException, FileIsNotDirectoryException, FileNotFoundException {
 
-        if (!directrory.exists())
+        if (!directory.exists())
             throw new DirectoryNotFoundException();
 
-        if (!directrory.isDirectory())
+        if (!directory.isDirectory())
             throw new FileIsNotDirectoryException();
 
 
@@ -28,7 +30,8 @@ public class LogFinderController {
             }
         };
 
-        List<LogFile> files = recursive(directrory, text, filter);
+        List<LogFile> files = new ArrayList<>();
+        recursive(files, directory, text, filter);
 
         if (files.isEmpty())
             throw new FileNotFoundException();
@@ -37,37 +40,42 @@ public class LogFinderController {
         return files;
     }
 
-    private List<LogFile> recursive(File dir, String text, FilenameFilter filter) {
-        List<LogFile> files = new ArrayList<>();
+    private void recursive(List<LogFile> files, File dir, String text, FilenameFilter filter) {
 
         for (File file : dir.listFiles(filter)) {
             if (file.isDirectory()) {
-                files.addAll(recursive(file, text, filter));
+                recursive(files, file, text, filter);
                 continue;
             }
 
-            if (isFileContains(file, text)) {
-                files.add(new LogFile(file.toString()));
-            }
+            findMatches(files, file, text);
         }
-
-        return files;
     }
 
-    private boolean isFileContains(File file, String match) {
+    private void findMatches(List<LogFile> files, File file, String match) {
+        LogFile logFile = new LogFile(file);
+
         try (
                 BufferedReader br = new BufferedReader(new FileReader(file))
         ) {
+            Pattern pattern = Pattern.compile(match);
+
+            long counter = 0;
             while(br.ready()) {
                 String line = br.readLine();
-                if (line.contains(match)) {
-                    return true;
+                Matcher matcher = pattern.matcher(line);
+                while (matcher.find()) {
+                    logFile.addIndex(counter + matcher.start(), counter + matcher.end());
                 }
+                counter += line.length() + 1;
             }
+
         } catch (FileNotFoundException ignored) {
         } catch (IOException ignored) {
         }
 
-        return false;
+        if (logFile.getIndexes().size() != 0) {
+            files.add(logFile);
+        }
     }
 }

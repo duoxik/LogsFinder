@@ -34,23 +34,28 @@ public class View extends JFrame implements ActionListener {
         controller.findLogs(path, type, text);
     }
 
-    public void readFile(File file) {
-        controller.readFile(file);
+    public void openFile(File file) {
+        EditorJPanel editor = tabs.get(file);
+
+        if (editor == null) {
+            controller.openFile(file);
+        } else {
+            tabbedPane.setSelectedComponent(editor);
+        }
+    }
+
+    public String getPage(File file, int pageNumber) {
+        return controller.getPage(file, pageNumber);
     }
 
     public void updateFileStructure(File rootDirectory, List<LogFile> files) {
         treePanel.setFileTree(rootDirectory, files);
     }
 
-    public void openNewTab(File file, String text) {
-        EditorJPanel editor = tabs.get(file);
-
-        if (editor == null) {
-            editor = new EditorJPanel(this, file, text);
-            tabbedPane.addTab(file.getName(), editor);
-            tabs.put(file, editor);
-        }
-
+    public void openTab(File file, int countPages, String firstPage) {
+        EditorJPanel editor = new EditorJPanel(this, file, firstPage, countPages);
+        tabbedPane.addTab(file.getName(), editor);
+        tabs.put(file, editor);
         tabbedPane.setSelectedComponent(editor);
     }
 

@@ -25,7 +25,7 @@ public class FileTreeJPanel extends JPanel {
     }
 
     public void readFile(File file) {
-        view.readFile(file);
+        view.openFile(file);
     }
 
     public File getDirectory() {
