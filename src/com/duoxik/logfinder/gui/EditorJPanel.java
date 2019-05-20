@@ -9,13 +9,20 @@ import java.io.*;
 public class EditorJPanel extends JPanel implements ActionListener {
     private JTextArea textPane = new JTextArea();
 
+    private Button prevMatchButton = new Button("<");
+    private Button nextMatchButton = new Button(">");
+
     private Button selectAllButton = new Button("Select All");
-    private Button prevButton = new Button("Previous");
-    private Button nextButton = new Button("Next");
+    private Button prevPageButton = new Button("<");
+    private Button nextPageButton = new Button(">");
     private Button closeButton = new Button("Close");
 
+    private JLabel countPagesLabel = new JLabel();
+    private JLabel matchesLabel = new JLabel("Matches: ");
+    private JLabel countMatchesLabel = new JLabel("1/10");
+
     private int countPages;
-    private int currentPage = 0;
+    private int currentPage = 1;
 
     private View view;
     private File file;
@@ -29,8 +36,31 @@ public class EditorJPanel extends JPanel implements ActionListener {
 
     private void init(String text) {
         setLayout(new BorderLayout());
+
+        initTopPanel();
         initTextPane(text);
-        initButtonsPanel();
+        initBottomPanel();
+    }
+
+    private void initTopPanel() {
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+
+        JPanel matchesPanel = new JPanel();
+        matchesPanel.add(matchesLabel);
+        matchesPanel.add(prevMatchButton);
+        matchesPanel.add(countMatchesLabel);
+        matchesPanel.add(nextMatchButton);
+
+        topPanel.add(BorderLayout.EAST, matchesPanel);
+
+        prevMatchButton.addActionListener(this);
+        nextMatchButton.addActionListener(this);
+
+        prevMatchButton.setActionCommand("Previous match");
+        nextMatchButton.setActionCommand("Next match");
+
+        add(BorderLayout.NORTH, topPanel);
     }
 
     private void initTextPane(String text) {
@@ -41,44 +71,72 @@ public class EditorJPanel extends JPanel implements ActionListener {
         add(BorderLayout.CENTER, scrollPane);
     }
 
-    private void initButtonsPanel() {
-        JPanel buttonsPanel = new JPanel();
+    private void initBottomPanel() {
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BorderLayout());
 
-        buttonsPanel.add(selectAllButton);
-        buttonsPanel.add(prevButton);
-        buttonsPanel.add(nextButton);
-        buttonsPanel.add(closeButton);
+        JPanel pagesPanel = new JPanel();
+        pagesPanel.add(prevPageButton);
+        pagesPanel.add(countPagesLabel);
+        pagesPanel.add(nextPageButton);
+
+        bottomPanel.add(BorderLayout.WEST, selectAllButton);
+        bottomPanel.add(BorderLayout.CENTER, pagesPanel);
+        bottomPanel.add(BorderLayout.EAST, closeButton);
 
         selectAllButton.addActionListener(this);
-        prevButton.addActionListener(this);
-        nextButton.addActionListener(this);
+        prevPageButton.addActionListener(this);
+        nextPageButton.addActionListener(this);
         closeButton.addActionListener(this);
 
-        prevButton.setEnabled(false);
-        if (countPages == 1) nextButton.setEnabled(false);
+        prevPageButton.setActionCommand("Previous page");
+        nextPageButton.setActionCommand("Next page");
 
-        add(BorderLayout.SOUTH,buttonsPanel);
+        countPagesLabel.setText("1/" + countPages);
+
+        prevPageButton.setEnabled(false);
+        if (countPages == 1) nextPageButton.setEnabled(false);
+
+        add(BorderLayout.SOUTH,bottomPanel);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
+            case "Previous match":
+                //TODO need to do previous match button action
+                System.out.println("Previous match");
+                break;
+            case "Next match":
+                //TODO need to do next match button action
+                System.out.println("Next match");
+                break;
             case "Select All":
                 textPane.selectAll();
                 textPane.requestFocus();
                 break;
-            case "Previous":
-                textPane.setText(view.getPage(file, --currentPage));
-                nextButton.setEnabled(true);
-                if (currentPage - 1 < 1) prevButton.setEnabled(false);
+            case "Previous page":
+                previousPage();
                 break;
-            case "Next":
-                textPane.setText(view.getPage(file, ++currentPage));
-                prevButton.setEnabled(true);
-                if (currentPage + 1 > countPages) nextButton.setEnabled(false);
+            case "Next page":
+                nextPage();
                 break;
             case "Close":
                 view.closeTab(file);
         }
+    }
+
+    private void nextPage() {
+        textPane.setText(view.getPage(file, ++currentPage));
+        countPagesLabel.setText(currentPage + "/" + countPages);
+        prevPageButton.setEnabled(true);
+        if (currentPage + 1 > countPages) nextPageButton.setEnabled(false);
+    }
+
+    private void previousPage() {
+        textPane.setText(view.getPage(file, --currentPage));
+        countPagesLabel.setText(currentPage + "/" + countPages);
+        nextPageButton.setEnabled(true);
+        if (currentPage - 1 < 1) prevPageButton.setEnabled(false);
     }
 }

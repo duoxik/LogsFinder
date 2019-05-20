@@ -52,7 +52,6 @@ public class Controller implements Runnable {
     }
 
     public void openFile(File file) {
-
         LogFile log = model.getLogFile(file);
 
         if (log != null) {
