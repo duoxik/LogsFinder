@@ -74,9 +74,15 @@ public class OpenJFrame extends JFrame implements ActionListener {
     }
 
     private void initTextFields() {
+
+        path.setDocument(new JTextFieldLimit(100));
+        type.setDocument(new JTextFieldLimit(10));
+        text.setDocument(new JTextFieldLimit(50));
+
         path.setText("/home/duoxik/IdeaProjects/LogsFinder/test/com/duoxik/logfinder/files");
         type.setText("log");
         text.setText("client");
+
 //        path.setText("Enter directory path...");
 //        type.setText("log");
 //        text.setText("Enter text...");
