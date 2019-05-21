@@ -10,9 +10,8 @@ import java.util.Objects;
 public class LogFile implements Comparable<LogFile> {
 
     private File file;
-    private String text = null;
-    private List<Pair> indexes = new ArrayList<>();
-    private long cursor = 0;
+    private List<MatchIndex> matchIndexes = new ArrayList<>();
+    private int countPages = 0;
 
     public LogFile(String path) {
         this.file = new File(path);
@@ -30,24 +29,20 @@ public class LogFile implements Comparable<LogFile> {
         return file;
     }
 
-    public String getText() {
-        return text;
+    public List<MatchIndex> getMatchIndexes() {
+        return Collections.unmodifiableList(matchIndexes);
     }
 
-    public List<Pair> getIndexes() {
-        return Collections.unmodifiableList(indexes);
+    public int getCountPages() {
+        return countPages;
     }
 
-    public long getCursor() {
-        return cursor;
+    public void setCountPages(int countPages) {
+        this.countPages = countPages;
     }
 
-    public void setCursor(long cursor) {
-        this.cursor = cursor;
-    }
-
-    public void addIndex(long start, long end) {
-        indexes.add(new Pair(start, end));
+    public void addIndex(int start, int end, int page) {
+        matchIndexes.add(new MatchIndex(start, end, page));
     }
 
     @Override
@@ -68,21 +63,27 @@ public class LogFile implements Comparable<LogFile> {
         return Objects.hash(file);
     }
 
-    public static class Pair {
-        private long x;
-        private long y;
+    public static class MatchIndex {
+        private int start;
+        private int end;
+        private int page;
 
-        public Pair(long x, long y) {
-            this.x = x;
-            this.y = y;
+        public MatchIndex(int start, int end, int page) {
+            this.start = start;
+            this.end = end;
+            this.page = page;
         }
 
-        public long getX() {
-            return x;
+        public int getStart() {
+            return start;
         }
 
-        public long getY() {
-            return y;
+        public int getEnd() {
+            return end;
+        }
+
+        public int getPage() {
+            return page;
         }
     }
 }

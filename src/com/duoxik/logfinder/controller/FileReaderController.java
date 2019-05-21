@@ -6,18 +6,16 @@ import java.io.*;
 
 public class FileReaderController {
 
-    private static final int PAGE_SIZE = 1024 * 1024;
-
     public String readFile(LogFile log, int pageNumber) throws IOException {
         try (
                 RandomAccessFile raf = new RandomAccessFile(log.getFile(), "r")
         ) {
-            long position = PAGE_SIZE * (pageNumber - 1);
+            long position = Controller.PAGE_SIZE * (pageNumber - 1);
             raf.seek(position);
 
-            byte[] arr = raf.length() - position < PAGE_SIZE
+            byte[] arr = raf.length() - position < Controller.PAGE_SIZE
                     ? new byte[(int) (raf.length() - position)]
-                    : new byte[PAGE_SIZE];
+                    : new byte[Controller.PAGE_SIZE];
 
             raf.read(arr);
 
@@ -29,9 +27,9 @@ public class FileReaderController {
         try (
                 FileInputStream fis = new FileInputStream(log.getFile())
         ) {
-            return fis.available() % PAGE_SIZE != 0
-                    ? fis.available() / PAGE_SIZE + 1
-                    : fis.available() / PAGE_SIZE;
+            return fis.available() % Controller.PAGE_SIZE != 0
+                    ? fis.available() / Controller.PAGE_SIZE + 1
+                    : fis.available() / Controller.PAGE_SIZE;
 
         }
     }

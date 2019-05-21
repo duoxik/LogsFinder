@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class Controller implements Runnable {
+
+    public static final int PAGE_SIZE = 1024 * 1024;
+
     private final Model model;
     private final View view;
     private final LogFinderController logFinder = new LogFinderController();
@@ -55,18 +58,14 @@ public class Controller implements Runnable {
     public void openFile(File file) {
         try {
             LogFile log = model.getLogFile(file);
-
-            if (log != null) {
-                String firstPage = fileReader.readFile(log, 1);
-                int countPages = fileReader.countPages(log);
-                view.openTab(file, countPages, firstPage);
-            }
-        } catch (IOException ignored) {}
+            view.openTab(log);
+        } catch (FileNotFoundException e) {
+            view.showFileIsNotFound();
+        }
     }
 
-    public String getPage(File file, int pageNumber) {
+    public String getPage(LogFile log, int pageNumber) {
         try {
-            LogFile log = model.getLogFile(file);
             return fileReader.readFile(log, pageNumber);
         } catch (IOException ignored) {
             return null;

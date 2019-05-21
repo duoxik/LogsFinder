@@ -1,13 +1,24 @@
 package com.duoxik.logfinder.gui;
 
+import com.duoxik.logfinder.model.LogFile;
+
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.util.List;
 
 public class EditorJPanel extends JPanel implements ActionListener {
     private JTextArea textPane = new JTextArea();
+
+    private Highlighter highlighter = textPane.getHighlighter();
+    private DefaultHighlighter.DefaultHighlightPainter hYellow =
+            new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
+    private DefaultHighlighter.DefaultHighlightPainter hCyan =
+            new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN);
 
     private Button prevMatchButton = new Button("<");
     private Button nextMatchButton = new Button(">");
@@ -19,26 +30,64 @@ public class EditorJPanel extends JPanel implements ActionListener {
 
     private JLabel countPagesLabel = new JLabel();
     private JLabel matchesLabel = new JLabel("Matches: ");
-    private JLabel countMatchesLabel = new JLabel("1/10");
+    private JLabel countMatchesLabel = new JLabel();
 
     private int countPages;
-    private int currentPage = 1;
+    private int countMatches;
+    private int currentPage;
+    private int currentMatch;
 
     private View view;
-    private File file;
+    private LogFile log;
+    private List<LogFile.MatchIndex> matchIndexes;
 
-    public EditorJPanel(View view, File file, String firstPage, int countPages) {
+    public EditorJPanel(View view, LogFile log) {
         this.view = view;
-        this.file = file;
-        this.countPages = countPages;
-        init(firstPage);
+        this.log = log;
+        this.matchIndexes = log.getMatchIndexes();
+        this.countPages = log.getCountPages();
+        this.countMatches = log.getMatchIndexes().size();
+        this.currentPage = matchIndexes.get(0).getPage();
+        this.currentMatch = 1;
+
+        init();
+        goToPage(currentPage);
     }
 
-    private void init(String text) {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+            case "Previous match":
+                goToMatch(currentMatch - 1);
+                break;
+            case "Next match":
+                goToMatch(currentMatch + 1);
+                break;
+            case "Select All":
+                textPane.selectAll();
+                textPane.requestFocus();
+                break;
+            case "Previous page":
+                goToPage(currentPage - 1);
+                break;
+            case "Next page":
+                goToPage(currentPage + 1);
+                break;
+            case "Close":
+                view.closeTab(log);
+        }
+    }
+
+    public void focus() {
+        LogFile.MatchIndex matchIndex = matchIndexes.get(currentMatch - 1);
+        textPane.setCaretPosition(matchIndex.getStart());
+    }
+
+    private void init() {
         setLayout(new BorderLayout());
 
         initTopPanel();
-        initTextPane(text);
+        initTextPane();
         initBottomPanel();
     }
 
@@ -60,11 +109,14 @@ public class EditorJPanel extends JPanel implements ActionListener {
         prevMatchButton.setActionCommand("Previous match");
         nextMatchButton.setActionCommand("Next match");
 
+        prevMatchButton.setEnabled(false);
+        if (countMatches == 1) nextMatchButton.setEnabled(false);
+
         add(BorderLayout.NORTH, topPanel);
     }
 
-    private void initTextPane(String text) {
-        textPane.setText(text);
+    private void initTextPane() {
+        textPane.setLineWrap(true);
         textPane.setEditable(false);
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(textPane);
@@ -92,51 +144,67 @@ public class EditorJPanel extends JPanel implements ActionListener {
         prevPageButton.setActionCommand("Previous page");
         nextPageButton.setActionCommand("Next page");
 
-        countPagesLabel.setText("1/" + countPages);
-
-        prevPageButton.setEnabled(false);
-        if (countPages == 1) nextPageButton.setEnabled(false);
-
         add(BorderLayout.SOUTH,bottomPanel);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        switch (e.getActionCommand()) {
-            case "Previous match":
-                //TODO need to do previous match button action
-                System.out.println("Previous match");
-                break;
-            case "Next match":
-                //TODO need to do next match button action
-                System.out.println("Next match");
-                break;
-            case "Select All":
-                textPane.selectAll();
-                textPane.requestFocus();
-                break;
-            case "Previous page":
-                previousPage();
-                break;
-            case "Next page":
-                nextPage();
-                break;
-            case "Close":
-                view.closeTab(file);
+    private void highLightMatches() {
+        highlighter.removeAllHighlights();
+
+        try {
+            for (LogFile.MatchIndex matchIndex : matchIndexes) {
+                if (currentPage == matchIndex.getPage()) {
+                    highlighter.addHighlight(matchIndex.getStart(), matchIndex.getEnd(), hYellow);
+                }
+            }
+        } catch (BadLocationException ignored) {}
+    }
+
+    private void goToMatch(int matchNumber) {
+        LogFile.MatchIndex matchIndex = matchIndexes.get(matchNumber - 1);
+
+        if (matchIndex.getPage() != currentPage) {
+            goToPage(matchIndex.getPage());
         }
+
+        currentMatch = matchNumber;
+
+        focus();
+        lockButtons();
+        updateLabels();
     }
 
-    private void nextPage() {
-        textPane.setText(view.getPage(file, ++currentPage));
-        countPagesLabel.setText(currentPage + "/" + countPages);
-        prevPageButton.setEnabled(true);
-        if (currentPage + 1 > countPages) nextPageButton.setEnabled(false);
+    private void goToPage(int pageNumber) {
+        textPane.setText(view.getPage(log, pageNumber));
+        currentPage = pageNumber;
+        highLightMatches();
+        lockButtons();
+        updateLabels();
     }
 
-    private void previousPage() {
-        textPane.setText(view.getPage(file, --currentPage));
+    private void lockButtons() {
+        if (currentPage + 1 > countPages)
+            nextPageButton.setEnabled(false);
+        else
+            nextPageButton.setEnabled(true);
+
+        if (currentPage - 1 < 1)
+            prevPageButton.setEnabled(false);
+        else
+            prevPageButton.setEnabled(true);
+
+        if (currentMatch + 1 > countMatches)
+            nextMatchButton.setEnabled(false);
+        else
+            nextMatchButton.setEnabled(true);
+
+        if (currentMatch - 1 < 1)
+            prevMatchButton.setEnabled(false);
+        else
+            prevMatchButton.setEnabled(true);
+    }
+
+    private void updateLabels() {
         countPagesLabel.setText(currentPage + "/" + countPages);
-        nextPageButton.setEnabled(true);
-        if (currentPage - 1 < 1) prevPageButton.setEnabled(false);
+        countMatchesLabel.setText(currentMatch + "/" + countMatches);
     }
 }

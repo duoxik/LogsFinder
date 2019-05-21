@@ -56,25 +56,30 @@ public class LogFinderController {
         LogFile logFile = new LogFile(file);
 
         try (
-                BufferedReader br = new BufferedReader(new FileReader(file))
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))
         ) {
             Pattern pattern = Pattern.compile(match);
 
-            long counter = 0;
-            while(br.ready()) {
-                String line = br.readLine();
-                Matcher matcher = pattern.matcher(line);
+            int pagesCounter = 0;
+            while(bis.available() > 0) {
+                pagesCounter++;
+                byte[] arr = bis.available() < Controller.PAGE_SIZE
+                        ? new byte[bis.available()]
+                        : new byte[Controller.PAGE_SIZE];
+
+                bis.read(arr);
+                String page = new String(arr);
+                Matcher matcher = pattern.matcher(page);
                 while (matcher.find()) {
-                    logFile.addIndex(counter + matcher.start(), counter + matcher.end());
+                    logFile.addIndex(matcher.start(), matcher.end(), pagesCounter);
                 }
-                counter += line.length() + 1;
             }
 
+            logFile.setCountPages(pagesCounter);
         } catch (FileNotFoundException ignored) {
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
 
-        if (logFile.getIndexes().size() != 0) {
+        if (logFile.getMatchIndexes().size() != 0) {
             files.add(logFile);
         }
     }

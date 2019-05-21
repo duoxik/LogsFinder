@@ -19,7 +19,7 @@ public class View extends JFrame implements ActionListener {
     private JTabbedPane tabbedPane = new JTabbedPane();
     private OpenJFrame openFrame = new OpenJFrame(this);
 
-    private Map<File, EditorJPanel> tabs = new HashMap<>();
+    private Map<LogFile, EditorJPanel> tabs = new HashMap<>();
 
     public void setController(Controller controller) {
         this.controller = controller;
@@ -35,7 +35,7 @@ public class View extends JFrame implements ActionListener {
     }
 
     public void openFile(File file) {
-        EditorJPanel editor = tabs.get(file);
+        EditorJPanel editor = tabs.get(new LogFile(file));
 
         if (editor == null) {
             controller.openFile(file);
@@ -44,23 +44,24 @@ public class View extends JFrame implements ActionListener {
         }
     }
 
-    public String getPage(File file, int pageNumber) {
-        return controller.getPage(file, pageNumber);
+    public String getPage(LogFile log, int pageNumber) {
+        return controller.getPage(log, pageNumber);
     }
 
     public void updateFileStructure(File rootDirectory, List<LogFile> files) {
         treePanel.setFileTree(rootDirectory, files);
     }
 
-    public void openTab(File file, int countPages, String firstPage) {
-        EditorJPanel editor = new EditorJPanel(this, file, firstPage, countPages);
-        tabbedPane.addTab(file.getName(), editor);
-        tabs.put(file, editor);
+    public void openTab(LogFile log) {
+        EditorJPanel editor = new EditorJPanel(this, log);
+        tabbedPane.addTab(log.getFile().getName(), editor);
+        tabs.put(log, editor);
         tabbedPane.setSelectedComponent(editor);
+        editor.focus();
     }
 
-    public void closeTab(File file) {
-        EditorJPanel editor = tabs.remove(file);
+    public void closeTab(LogFile log) {
+        EditorJPanel editor = tabs.remove(log);
 
         if (editor != null) {
             tabbedPane.remove(editor);
@@ -106,6 +107,14 @@ public class View extends JFrame implements ActionListener {
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
         openFrame.setVisible(true);
+    }
+
+    public void showFileIsNotFound() {
+        JOptionPane.showMessageDialog(
+                null,
+                "File is not found. Perhaps data was changed",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
     }
 
     public void showFilesNotFound() {

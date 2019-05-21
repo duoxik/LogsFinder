@@ -17,14 +17,14 @@ public class Model {
         return Collections.unmodifiableList(files);
     }
 
-    public LogFile getLogFile(File file) {
+    public LogFile getLogFile(File file) throws FileNotFoundException {
         LogFile logFile = new LogFile(file);
         for (LogFile log : files) {
             if (log.equals(logFile))
                 return log;
         }
 
-        return null;
+        throw new FileNotFoundException();
     }
 
     public void update(File rootDirectory, List<LogFile> files) {
